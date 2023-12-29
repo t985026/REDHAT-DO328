@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: animal
+spec:
+  selector:
+    matchLabels:
+      app: animal
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: animal
+      annotations:
+        sidecar.istio.io/inject: "true"
+    spec:
+      containers:
+        - name: animal
+          image: quay.io/redhattraining/ossm-animal-service:1.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: animal
+  name: animal
+spec:
+  ports:
+    - port: 8080
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app: animal
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: animal
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - adoptapup-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /animals
+      route:
+        - destination:
+            host: animal
+            port:
+              number: 8080
