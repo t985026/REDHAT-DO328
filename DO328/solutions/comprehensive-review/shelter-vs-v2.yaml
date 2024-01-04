@@ -1,0 +1,25 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  annotations:
+  name: shelter-vs
+  namespace: adoptapup
+spec:
+  gateways:
+  - adoptapup-gateway
+  hosts:
+  - '*'
+  http:
+  - match:
+    - uri:
+        prefix: /shelters
+    route:
+    - destination:
+        host: shelter
+        port:
+          number: 8080
+    fault:
+      delay:
+        percentage:
+          value: 100
+        fixedDelay: 3000ms

@@ -1,0 +1,24 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: animal-vs
+  namespace: adoptapup
+spec:
+  gateways:
+  - adoptapup-gateway
+  hosts:
+  - '*'
+  http:
+  - match:
+    - uri:
+        prefix: /animals
+    route:
+    - destination:
+        host: animal
+        subset: v1
+        port:
+          number: 8080
+      weight: 100
+    mirror:
+      host: animal
+      subset: v2

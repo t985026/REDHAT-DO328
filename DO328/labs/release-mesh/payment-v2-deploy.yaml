@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: payment
+    version:
+  name:
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payment
+      version:
+  template:
+    metadata:
+      labels:
+        app: payment
+        version:
+      annotations:
+        sidecar.istio.io/inject: "true"
+    spec:
+      containers:
+      - name:
+        image: quay.io/redhattraining/ossm-payment:1.0
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        - containerPort: 8778
+          name: jolokia
+          protocol: TCP
+        - containerPort: 9779
+          name: prometheus
+          protocol: TCP
+        livenessProbe:
+          exec:
+            command:
+            - curl
+            - localhost:8080/health
+          initialDelaySeconds: 3
+          periodSeconds: 5
+          timeoutSeconds: 5
+        readinessProbe:
+          exec:
+            command:
+            - curl
+            - localhost:8080/health
+          initialDelaySeconds: 3
+          periodSeconds: 5
+          timeoutSeconds: 5
+        securityContext:
+          privileged: false
+---

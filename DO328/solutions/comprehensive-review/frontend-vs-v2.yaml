@@ -1,0 +1,27 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: frontend-vs
+  namespace: adoptapup
+spec:
+  gateways:
+  - adoptapup-gateway
+  hosts:
+  - '*'
+  http:
+  - match:
+    - uri:
+        prefix: /frontend
+    route:
+    - destination:
+        host: frontend
+        subset: v1
+        port:
+          number: 3000
+      weight: 80
+    - destination:
+        host: frontend
+        subset: v2
+        port:
+          number: 3000
+      weight: 20

@@ -1,0 +1,18 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: vertx-greet
+  labels:
+    kiali_wizard: weighted_routing
+spec:
+  gateways:
+  - vertx-greet-gateway
+  hosts:
+  - '*'
+  http:
+  - route:
+    - destination:
+        host: vertx-greet
+        port:
+          number: 8080
+        subset: v2

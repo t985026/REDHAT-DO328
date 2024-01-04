@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: frontend
+    version: v2
+  name: frontend-v2
+spec:
+  selector:
+    matchLabels:
+      app: frontend
+      version: v2
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: frontend
+        version: v2
+      annotations:
+        sidecar.istio.io/inject: "true"
+    spec:
+      containers:
+        - name: frontend-v2
+          image: quay.io/redhattraining/ossm-adopt-a-pup-webapp:2.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: REACT_APP_ADOPTION_SERVICE_URL
+              value: "http://istio-ingressgateway-istio-system.apps.ocp4.example.com/"
+            - name: REACT_APP_ANIMAL_SERVICE_URL
+              value: "http://istio-ingressgateway-istio-system.apps.ocp4.example.com/"
+            - name: REACT_APP_SHELTER_SERVICE_URL
+              value: "http://istio-ingressgateway-istio-system.apps.ocp4.example.com/"
+            - name: REACT_APP_NEWS_ENABLED
+              value: "1"
+            - name: BACKEND_NEWS_SERVICE_URL
+              value: "http://news-adoptapup-news.apps.ocp4.example.com"
+            - name: REACT_APP_EMAIL_APP_URL
+              value: "http://email-adoptapup.apps.ocp4.example.com/"

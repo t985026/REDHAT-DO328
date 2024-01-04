@@ -1,0 +1,16 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: gateway-vs
+spec:
+  hosts:
+  - gateway
+  http:
+  - mirror:
+      host: gateway
+      subset: v2
+    route:
+    - destination:
+        host: gateway
+        subset: v1
+      weight: 100
